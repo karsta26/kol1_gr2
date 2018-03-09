@@ -21,7 +21,6 @@
 #The whole repository MUST be a fork from https://github.com/mwmajew/kol1_gr2
 #Good Luck
 
-import numpy as np
 import random
 import time
 
@@ -39,15 +38,18 @@ class Flight(object):
 			self.new_orientation()
 			self.print_orient("Current")
 			self.correct()
-			self.print_orient("After correct")
+			self.print_orient("Corrected one")
 			time.sleep(1)
 
 
 	def correct(self):
-		pass
+		if self.orient < 0:
+			self.orient += 20
+		elif self.orient > 0:
+			self.orient -= 20
 
 	def new_orientation(self):
-		self.orient = random.gauss(self.mu, self.sigma)
+		self.orient = random.gauss(self.mu, self.sigma) * 180
 
 	def print_orient(self, s):
 		print(str(s)+" orientation: {}".format(self.orient))
@@ -56,5 +58,4 @@ class Flight(object):
 
 
 plane = Flight("Airplane")
-# p.print_orient("curre")
 plane.simulate()
