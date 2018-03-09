@@ -20,3 +20,41 @@
 #When you are done upload this code to your github repository. 
 #The whole repository MUST be a fork from https://github.com/mwmajew/kol1_gr2
 #Good Luck
+
+import numpy as np
+import random
+import time
+
+class Flight(object):
+	"""docstring for Plane"""
+	def __init__(self, name):
+		self.name = name
+		self.mu = 0
+		self.sigma = 0.1 # mean and standard deviation
+		self.orient = 0
+
+
+	def simulate(self):
+		while True:
+			self.new_orientation()
+			self.print_orient("Current")
+			self.correct()
+			self.print_orient("After correct")
+			time.sleep(1)
+
+
+	def correct(self):
+		pass
+
+	def new_orientation(self):
+		self.orient = random.gauss(self.mu, self.sigma)
+
+	def print_orient(self, s):
+		print(str(s)+" orientation: {}".format(self.orient))
+
+
+
+
+plane = Flight("Airplane")
+# p.print_orient("curre")
+plane.simulate()
