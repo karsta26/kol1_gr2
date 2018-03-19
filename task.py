@@ -21,41 +21,62 @@
 #The whole repository MUST be a fork from https://github.com/mwmajew/kol1_gr2
 #Good Luck
 
-import random
+from random import gauss
 import time
-
-class Flight(object):
-	"""docstring for Plane"""
-	def __init__(self, name):
-		self.name = name
-		self.mu = 0
-		self.sigma = 0.1 # mean and standard deviation
-		self.orient = 0
+import multiprocessing 
 
 
-	def simulate(self):
+class Plane:
+	def __init__(self):
+		self.orientation = 0
+		self.max_angle = 270
+
+	def __str__(self):
+		return "Current orientation: {:+f}\r".format(self.orientation)
+
+	def fly(self):
 		while True:
-			self.new_orientation()
-			self.print_orient("Current")
-			self.correct()
-			self.print_orient("Corrected one")
+			self.check_crash()
+			yield self.orientation
+
+	def check_crash(self):
+		if abs(self.orientation) > self.max_angle:
+			print("Ops! Plane has crashed")
+			exit()
+
+
+class Simulator:
+	def __init__(self, plane):
+		self.plane = plane
+
+	def start_simulation(self):
+		print("Starting Flight Simulation (press 'q' to exit)")
+		while self.plane.fly():
+			print(self.plane,end='')
+			self.turbulations()
+			self.apply_tilt_correction()
 			time.sleep(1)
 
+	def apply_tilt_correction(self):
+		if self.plane.orientation < 0:
+			self.plane.orientation += 20
+		elif self.plane.orientation > 0:
+			self.plane.orientation -= 20
 
-	def correct(self):
-		if self.orient < 0:
-			self.orient += 20
-		elif self.orient > 0:
-			self.orient -= 20
+	def turbulations(self):
+		new_orientation = gauss(0,20)
+		self.plane.orientation = new_orientation
 
-	def new_orientation(self):
-		self.orient = random.gauss(self.mu, self.sigma) * 180
+	def check_user_input(self, another_thread):
+	   	while True:
+	   		if input() == 'q':
+	   			another_thread.terminate()
+	   			print("Ending simulation")
+	   			exit()
 
-	def print_orient(self, s):
-		print(str(s)+" orientation: {}".format(self.orient))
-
-
-
-
-plane = Flight("Airplane")
-plane.simulate()
+if __name__ == '__main__':
+	simulation = Simulator(Plane())
+	another_thread = multiprocessing.Process(target=simulation.start_simulation)
+	another_thread.start()
+	simulation.check_user_input(another_thread)
+		
